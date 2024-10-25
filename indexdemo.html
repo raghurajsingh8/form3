@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Form Visibility</title>
+</head>
+<body>
+    <form id="mainForm">
+        <label for="optionSelect">Choose an option:</label>
+        <select id="optionSelect">
+            <option value="">--Choose an option--</option>
+            <option value="1">Option 1</option>
+            <option value="2">Option 2</option>
+            <!-- Add more options as needed -->
+        </select>
+    </form>
+
+    <form id="nextForm1" style="display: none;">
+        <p>Form for Option 1</p>
+        <!-- Additional fields for Option 1 -->
+    </form>
+    <form id="nextForm2" style="display: none;">
+        <p>Form for Option 2</p>
+        <!-- Additional fields for Option 2 -->
+    </form>
+    <!-- Add more forms as needed -->
+
+    <!-- JavaScript to handle the form visibility -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Reference to the select element
+            const optionSelect = document.getElementById("optionSelect");
+
+            optionSelect.addEventListener("change", function () {
+                // Hide all forms initially
+                document.getElementById("nextForm1").style.display = "none";
+                document.getElementById("nextForm2").style.display = "none";
+
+                // Show the form based on the selected option
+                if (this.value === "1") {
+                    document.getElementById("nextForm1").style.display = "block";
+                } else if (this.value === "2") {
+                    document.getElementById("nextForm2").style.display = "block";
+                }
+            });
+        });
+    </script>
+</body>
+</html>
