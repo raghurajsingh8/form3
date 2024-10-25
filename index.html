@@ -301,7 +301,7 @@ function showFormFields() {
         .map((option, index) => `${index + 1}. ${option.label}`)
         .join("\n");
 
-    const userChoice = prompt(`Please select an option:\n${optionsString}`);
+    const userChoice = prompt(`Please select  Type of System:\n${optionsString}`);
     const selectedIndex = parseInt(userChoice) - 1; // Subtract 1 to match array index
 
     // Check if the user selected a valid option
