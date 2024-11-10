@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
    <link rel="stylesheet" href="style.css">
    <link rel="icon" sizes="1512x1512" href="https://newpious.com/wp-content/uploads/2023/04/logo_211__1_-removebg-preview-1.png" type="image/x-icon">
@@ -132,18 +134,7 @@
     <label for="date">Date:</label>
     <input type="date" id="date" name="date" required><br>
     
-    <h3>Client Details</h3>
-    <label for="clientName">Client Name:</label>
-    <input type="text" id="clientName" name="clientName" required><br>
-<!-- 
-    <label for="clientContact">Client Contact Details:</label>
-    <input type="text" id="clientContact" name="clientContact" required><br> -->
-
-    <label for="mobile">Mobile No:</label>
-<input type="tel" name="mobile" id="mobile" placeholder="Enter your mobile number" maxlength="10" pattern="[0-9]{10}" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-
-    <label for="email">Email Id:</label>
-    <input type="email" id="email" name="email" required><br> 
+    
   </div>
 
   <!-- Option 2: Quotation and Subsidy Details for ON GRID -->
@@ -248,7 +239,10 @@
     <label for="remarks">Remarks:</label>
     <textarea id="remarks" name="remarks" rows="4" cols="50" required></textarea><br>
 
-    <h3>Client Details</h3>
+    
+</div>
+<div class="client-details">
+  <h3>Client Details</h3>
     
     <label for="clientName">Client Name:</label>
     <input type="text" id="clientName" name="clientName" required><br>
@@ -263,9 +257,10 @@
     <label for="emailId">Email Id:</label>
     <input type="email" id="emailId" name="emailId" required><br>
 </div>
-
   <!-- Submit Button -->
   <button type="submit">Submit</button>
+  <button type="button" onclick="generatePDF()">Print to PDF</button>
+
 </form>
    <center>
    <div class="card">
@@ -277,7 +272,7 @@
         <iframe src="https://www.google.com/maps/embed?pb=!1m23!1m12!1m3!1d151842.45001418184!2d80.96986446040474!3d26.887931834467164!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m8!3e6!4m0!4m5!1s0x399c395732bec399%3A0x5d575353c6237e6a!2sD2%2F541%2C%20Vikalp%20Khand%2C%20Gomti%20Nagar%2C%20Gomti%20Nager%2C%20Lucknow%2C%20Uttar%20Pradesh%20226010!3m2!1d26.8650961!2d81.03444549999999!5e0!3m2!1sen!2sin!4v1729804087624!5m2!1sen!2sin" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         <p><i class="fas fa-envelope"></i> <strong>Email:</strong> <a href="mailto:customercare@newpious.com">customercare@newpious.com</a></p>
         <p><i class="fas fa-phone"></i> <strong>Phone:</strong> <a href="tel:+915223137400">+91 522 313 7400</a></p>
-        <p><strong>Website:</strong> <a href="https://newpious.com/" target="_blank" class="button">Visit our website</a></p>
+        <p><strong>Website:</strong> <a href="https://newpious.com/" target="_blank" class="button" style="color: aliceblue;">Visit our website</a></p>
     </div>
 </div>
   </center>
@@ -350,5 +345,112 @@ window.onload = function() {
 
 
 </script>  
+
+ 
+<script>
+  function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
+      const pageWidth = pdf.internal.pageSize.width;
+const textWidth = pdf.getTextWidth(`Type of System: ${selectedLabel}`);
+const xPos = (pageWidth - textWidth) / 2; // 
+      const logoImg = new Image();
+      logoImg.src = 'logo.png';
+      const ContactIMG = new Image();
+      ContactIMG.src = 'CONTACT.png';
+  
+      logoImg.onload = function () {
+          // Add logo to the PDF
+         pdf.addImage(logoImg, 'WEBP', xPos, 10, 40, 20);
+
+// Set the main title for the PDF
+pdf.setFontSize(16);
+pdf.setTextColor(0, 0, 255);
+pdf.setFont("helvetica", "bold");
+
+// Add system type subheading
+pdf.setFontSize(12);
+pdf.setTextColor(0, 0, 0);
+// Calculate the X position for centering the text
+// Center the text
+
+// Set font and text color
+pdf.setFontSize(12);
+pdf.setTextColor(0, 0, 0); // Black for the text
+
+// Add the centered text
+pdf.text(`Type of System: ${selectedLabel}`, xPos, 35);
+
+
+// Draw a horizontal line below the title
+pdf.setLineWidth(0.5);
+pdf.line(10, 40, 200, 40);  // Adjust coordinates for the line as needed
+  
+          // Collect form data
+          const formFields = document.querySelectorAll("#dynamicForm input, #dynamicForm select, #dynamicForm textarea");
+          let yOffset = 45; // Y offset for content positioning
+          const leftX = 10; // X position for labels
+          const rightX = 100; // X position for values
+          const labelValueSpacing = 50; // Adjust spacing between label and value
+          let counter = 1;
+  
+          formFields.forEach((field) => {
+              const label = document.querySelector(`label[for="${field.id}"]`);
+              const labelText = label ? label.innerText : field.name;
+              const value = field.value || "N/A";
+  
+              if (value !== "N/A") {
+                  // Check if we need to break the page
+                  if (yOffset > pdf.internal.pageSize.height - 40) {
+                      pdf.addPage(); // Add a new page
+                      yOffset = 10; // Reset Y offset for the new page
+                  }
+  
+                  // Numbered label with minimal spacing
+                  pdf.setTextColor(0, 0, 0); // Black for labels
+                  pdf.setFontSize(6);
+                  const fullLabel = `${counter}. ${labelText}:`;
+                  const labelTextLines = pdf.splitTextToSize(fullLabel, labelValueSpacing);
+  
+                  pdf.text(labelTextLines, leftX, yOffset);
+  
+                  // Value text, wrapping if necessary
+                  pdf.setTextColor(0, 128, 0); // Green for values
+                  const valueLines = pdf.splitTextToSize(value, 80);
+                  pdf.text(valueLines, rightX, yOffset);
+  
+                  // Update counters and Y offset
+                  counter++;
+                  const lineSpacing = Math.max(labelTextLines.length, valueLines.length) * 6;
+                  yOffset += lineSpacing; // Increment Y offset based on content
+              }
+          });
+  
+          // Position Contact image at the bottom, with minimal spacing
+  
+          // Check if Contact image fits on the current page, else add a new page
+         
+  
+          // Save the PDF
+          pdf.save("Filled_Form_Newpious_Synergies.pdf");
+      };
+  }
+  </script>
+  
+  
+
+
+
+
+
+  
+  
+
+
+
+
+
+  
+  
   </body>
 </html>
